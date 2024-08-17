@@ -156,3 +156,94 @@ a very good option to explain the serial correlation.
 ![image](https://github.com/user-attachments/assets/a7cbea7a-90c2-4631-abc1-75d2b5b48baf)
 
 Comparing the information criteria of both of them, we can see that model1 has lower information criteria and residuals are uncorrelated, so I will keep model1 to produce the forecasts.
+
+| Model      | Order               | NPar | AIC      | AICc     | BIC      |
+| ---------- |:-------------------:| :---:| :-------:| :-------:| :-------:|
+| **model1** | (9,1,2)x(1,1,2)[12] | 14   | -2379.35 | -2378.44 | -2314.98 |
+| **model2** | (9,1,2)x(1,1,2)[12] | 14-9 | -2165.8  | -2165.64 | -2140.05 |
+
+I tried other values of the orders of the seasonal components of the model, but it did not produced better results. However, increasing the order of the MA component, lowering the order of the AR component and removing the differencing of the regular components, I was able to get a good model that I hope can produce good forecasts.
+
+Using model3 as sarima(lcde,1,0,7,2,1,1,12), I could get good results, with almost all the residuals uncorrelated, but with some parameters being statistically not significant.
+
+![image](https://github.com/user-attachments/assets/e1bbdf18-3e06-407b-acb9-33d3f90af902)
+
+![image](https://github.com/user-attachments/assets/42231df4-b442-417b-b7fa-7f6f1b7192af)
+
+After the re-estimation, I had to recalculate the Lung-Box statistic, as before, I could see that the residuals are almost all uncorrelated and all the parameters are statistically significant.
+
+![image](https://github.com/user-attachments/assets/0ff3ae97-165d-4edc-b057-78050b7b40ff)
+
+After analyzing these two models, I could see that model4 has a better AIC, so I will keep the model to produce forecasts.
+
+![image](https://github.com/user-attachments/assets/e83473a4-c40e-465f-a114-4c3178c61f60)
+
+![image](https://github.com/user-attachments/assets/59311d76-b53c-47bd-9c34-84d207ba6133)
+
+| Model      | Order               | NPar | AIC      | AICc     | BIC      |
+| ---------- |:-------------------:| :---:| :-------:| :-------:| :-------:|
+| **model3** | (1,0,7)x(2,1,1)[12] | 11   | -2395.76 | -2395.16 | -2344.23 |
+| **model4** | (1,0,7)x(2,1,1)[12] | 11-5 | -2397.25 | -2397.04 | -2367.2  |
+
+After trying to tune the parameters of model3, I noticed that this one is the better one. Therefore, I will use model1, model3 and model4 to produce forecasts for this time series, with model4 being the one with lower information criteria.
+
+The results for the forecast accuracy, for the training set and the test set, can be obtained, as can be seen below.
+
+![image](https://github.com/user-attachments/assets/bfd26db6-744c-41c1-8fb4-c5c08f57c557)
+
+For the training set, I got the following accuracy measures:
+
+| Model      | RMSE   | MAE    | MAPE   | MASE   |
+| ---------- |:------:| :-----:| :-----:| :-----:|
+| **model1** | 0.0254 | 0.0193 | 0.3174 | 0.5869 |
+| **model3** | 0.0253 | 0.0195 | 0.3217 | 0.5945 |
+| **model4** | 0.0255 | 0.0197 | 0.3254 | 0.6013 |
+
+All the models have a similar performance, with model4 being worse than the others on all measures, because information criteria penalizes models with the smallest number of parameters.
+
+For the test set, the measures are the one below:
+
+| Model      | RMSE   | MAE    | MAPE   | MASE   |
+| ---------- |:------:| :-----:| :-----:| :-----:|
+| **model1** | 0.0455 | 0.0382 | 0.6311 | 1.1623 |
+| **model3** | 0.0440 | 0.0374 | 0.6188 | 1.1399 |
+| **model4** | 0.0437 | 0.0371 | 0.6140 | 1.1311 |
+
+However, in the test set is model4 with the better performance, that was the worst of the 3 models on the training set, with the best accuracy measures with MAPE of 0.614%.
+
+Below I show the 95% confidence intervals in the forecasts for the best performing model, in the test set that is model4.
+
+![image](https://github.com/user-attachments/assets/d60b3a5a-1be7-43dc-966d-97ee6ecef5e2)
+
+Analyzing the plots of the forecasts with the confidence intervals and the observed values, I noticed that all the models performed similarly. With forecasts that overestimate the observed values in the last months, but in other months they achieved very good forecasts.
+
+For a better visualization, I only set the plots for the period after 2019.
+
+![image](https://github.com/user-attachments/assets/53f02aef-c4d7-45b0-ac8e-0aa01a300274)
+
+![image](https://github.com/user-attachments/assets/52e0cb3a-e0ce-4821-bc49-70675ce8b713)
+
+![image](https://github.com/user-attachments/assets/be1a4a30-c6c8-448b-8b4d-4456e1309d81)
+
+In the Graphic below, we can see that the forecast was very good until after August, where the forecasting errors increased a lot.
+
+![image](https://github.com/user-attachments/assets/76debfa7-f5d9-4e70-8c4a-80deec383ffb)
+
+Finally, we can have the multistep ahead forecasts for the 3 models, as can be seen below.
+
+![image](https://github.com/user-attachments/assets/f17dfafd-6df7-40c0-ad3d-a260f070e9c4)
+
+![image](https://github.com/user-attachments/assets/56ad9873-fde0-4ca0-bd31-448e00ee1116)
+
+![image](https://github.com/user-attachments/assets/a03e867f-f191-4649-90d8-96c2eda01178)
+
+## Conclusion
+After doing this analysis, I can conclude that the SARIMA models were very accurate on forecasting and that the most accurate forecasts can be modeled by several different models and finding the best one is difficult.
+
+As I stated before, model4 is the best from all the models that I used, but the other ones can make good predictions too. Despite being the model with less parameters.
+
+For future work, I would like to use multivariate time series analysis to the decomposed the data that I used.
+
+## Copyright
+
+© 2024 Victor Malheiro
